@@ -14,7 +14,7 @@ export default (): Config => ({
   },
   jwt: {
     accessSecret: process.env.JWT_ACCESS_SECRET,
-    accessExpiresIn: process.env.JWT_ACCESS_EXPIRES_IN || '1h',
+    accessExpiresIn: process.env.JWT_ACCESS_EXPIRES_IN || '8h',
     refreshSecret: process.env.JWT_REFRESH_SECRET,
     refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '30d',
   },

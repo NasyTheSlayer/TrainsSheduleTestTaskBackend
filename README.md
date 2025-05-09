@@ -1,173 +1,185 @@
-# Train Schedule Application Backend
+# 🚄 Train Schedule API
 
-## Project Overview
-This repository contains a backend application for a train schedule system built with NestJS and TypeScript. The application provides a RESTful API for managing train schedules with user authentication.
+<div align="center">
 
-## Technologies
-- **Framework**: [NestJS](https://nestjs.com/) (v10.3.8)
-- **Language**: TypeScript
-- **Database**: PostgreSQL
-- **ORM**: TypeORM
-- **Authentication**: JWT (JSON Web Tokens)
+![NestJS](https://img.shields.io/badge/NestJS-E0234E?style=for-the-badge&logo=nestjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white)
 
-## Features
+</div>
 
-### 🔐 Authentication
-- User registration and login
-- JWT-based authentication with refresh tokens
-- Secure password handling with bcrypt
+Backend API for the Train Schedule application, built with NestJS and TypeScript.
 
-### 🚆 Train Schedule Management
-- Complete CRUD operations for trains
-- Search functionality
-- Pagination support
+---
 
-### 🛠️ API Design
-- RESTful API following best practices
-- Appropriate HTTP status codes
-- Request validation with DTOs
-- Standardized API response format
+## ✨ Key Features
 
-## Project Structure
+<table>
+  <tr>
+    <td width="50%">
+      <h3>🔐 Authentication</h3>
+      <ul>
+        <li>JWT authentication</li>
+        <li>Secure user management</li>
+        <li>Role-based access control</li>
+      </ul>
+    </td>
+    <td width="50%">
+      <h3>🔍 Train Data API</h3>
+      <ul>
+        <li>CRUD operations for train schedules</li>
+        <li>Filtering and sorting</li>
+        <li>Validation with class-validator</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <h3>⚙️ Architecture</h3>
+      <ul>
+        <li>Modular NestJS structure</li>
+        <li>Global exception handling</li>
+        <li>Environment-based configuration</li>
+      </ul>
+    </td>
+    <td width="50%">
+      <h3>🛡️ Security</h3>
+      <ul>
+        <li>CORS protection</li>
+        <li>Input validation</li>
+        <li>HTTP exception filters</li>
+      </ul>
+    </td>
+  </tr>
+</table>
+
+## 🧩 Technologies
+
+<details>
+<summary><b>Backend Stack</b></summary>
+
+- **NestJS** - Progressive Node.js framework
+- **TypeScript** - Typed programming language
+- **Express** - Web framework for Node.js
+- **dotenv** - Environment variable management
+- **class-validator** - Input validation
+
+</details>
+
+<details>
+<summary><b>Development Tools</b></summary>
+
+- **ESLint** - Static code analysis
+- **Prettier** - Code formatting 
+- **TypeScript** - Strict typing
+
+</details>
+
+## 🏗️ Project Architecture
 
 ```
 src/
-├── common/           # Shared components, filters, responses
-├── configs/          # Application configuration
-├── modules/
-│   ├── auth/         # Authentication module
-│   ├── postgres/     # Database connection module
-│   ├── train/        # Train schedule management module
-│   └── user/         # User management module
-├── app.module.ts     # Main application module
-├── main.ts           # Application entry point
-└── setup-cors.ts     # CORS configuration
+├── 📁 app.module.ts          # Main application module
+├── 📁 main.ts                # Application entry point
+├── 📄 setup-cors.ts          # CORS configuration
+│
+├── 📁 common/                # Common utilities
+│   └── 📁 filters/           # Global filters
+│       └── 📄 http-exception.filter.ts  # HTTP exception handling
+│
+├── 📁 configs/               # Application configuration
+│   └── 📄 configs.type.ts    # Configuration type definitions
+│
+├── 📁 modules/               # Feature modules
+│   ├── 📁 auth/              # Authentication module
+│   │   ├── 📁 controllers/   # Auth controllers
+│   │   ├── 📁 dto/           # Data transfer objects
+│   │   ├── 📁 guards/        # Authentication guards
+│   │   └── 📁 services/      # Auth services
+│   │
+│   └── 📁 trains/            # Trains module
+│       ├── 📁 controllers/   # Train controllers
+│       ├── 📁 dto/           # Data transfer objects
+│       ├── 📁 entities/      # Train entities
+│       └── 📁 services/      # Train services
+│
+└── 📁 utils/                 # Utility functions
 ```
 
-## Modules
+## 🚀 Implementation Features
 
-### Auth Module
-Handles user authentication with endpoints:
-- `POST /auth/register` - Create a new user account
-- `POST /auth/login` - Authenticate a user
-- `POST /auth/refresh` - Refresh the access token
+### Validation and Error Handling
 
-### Train Module
-Core functionality for managing train schedules:
-- `GET /trains` - List all trains with search and pagination
-- `GET /trains/:id` - Get train by ID
-- `POST /trains` - Create a new train
-- `PUT /trains/:id` - Update a train (full update)
-- `PATCH /trains/:id` - Update a train (partial update)
-- `DELETE /trains/:id` - Delete a train
+The application uses NestJS's built-in validation:
 
-### User Module
-Manages user-related operations.
-
-## Data Models
-
-### Train Entity
 ```typescript
-@Entity()
-export class Train {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+// Global validation pipe setup
+app.useGlobalPipes(new ValidationPipe({
+  whitelist: true,
+  forbidNonWhitelisted: true,
+  transform: true,
+}));
 
-  @Column()
-  number: string;
-
-  @Column()
-  departure: string;
-
-  @Column()
-  destination: string;
-
-  @Column()
-  carrier: string;
-
-  @Column('timestamp')
-  departureTime: Date;
-
-  @Column('timestamp')
-  arrivalTime: Date;
-
-  @CreateDateColumn()
-  createdAt: Date;
-}
+// Global exception filter
+app.useGlobalFilters(new HttpExceptionFilter());
 ```
 
-### User Entity
+### Configuration Management
+
+Environment-based configuration with strong typing:
+
 ```typescript
-@Entity()
-export class User {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+// Type-safe configuration
+const appConfig = configService.get<AppConfig>('app');
 
-  @Column({ unique: true })
-  email: string;
-
-  @Column()
-  password: string;
-  
-  @CreateDateColumn()
-  createdAt: Date;
-  
-  @UpdateDateColumn()
-  updatedAt: Date;
-}
+await app.listen(appConfig.port, appConfig.host, () => {
+  console.log(`Server running on http://${appConfig.host}:${appConfig.port}`);
+});
 ```
 
-## Running the Application
+### Security Features
 
-### Installation
-```bash
-$ npm install
-```
+- CORS configuration for secure client-server communication
+- Input validation to prevent malicious data
+- Exception filters for proper error handling
 
-### Starting the Database
-```bash
-$ npm run start:docker:db
-```
+## 🔧 Running the Project
 
-### Running the App
-```bash
-# development
-$ npm run start
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/username/train-schedule-api.git
+   cd train-schedule-api
+   ```
 
-# watch mode
-$ npm run start:dev
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-# production mode
-$ npm run start:prod
-```
+3. Create a `.env` file in the root directory:
+   ```
+   PORT=3000
+   HOST=localhost
+   DATABASE_URL=your_database_connection_string
+   JWT_SECRET=your_jwt_secret
+   ```
 
-### Testing
-```bash
-# unit tests
-$ npm run test
+4. Start the development server:
+   ```bash
+   npm run start:dev
+   ```
 
-# e2e tests
-$ npm run test:e2e
+5. The API will be available at: [http://localhost:3000](http://localhost:3000)
 
-# test coverage
-$ npm run test:cov
-```
+## 📦 API Endpoints
 
-## Environment Configuration
-The application uses environment variables for configuration. Key variables include:
-- `APP_PORT` - Application port (default: 8080)
-- `APP_HOST` - Application host (default: 0.0.0.0)
-- `DB_PORT` - Database port (default: 5432)
-- `DB_HOST` - Database host
-- `DB_USERNAME` - Database username
-- `DB_PASSWORD` - Database password
-- `DB_NAME` - Database name
-- `JWT_ACCESS_SECRET` - JWT access token secret
-- `JWT_ACCESS_EXPIRES_IN` - JWT access token expiration (default: 1h)
-- `JWT_REFRESH_SECRET` - JWT refresh token secret
-- `JWT_REFRESH_EXPIRES_IN` - JWT refresh token expiration (default: 30d)
+The API provides the following endpoints:
 
-## Development Tools
-- ESLint and Prettier for code quality
-- Husky for Git hooks
-- TypeORM migrations for database schema management
+- `POST /auth/login` - User authentication
+- `POST /auth/register` - User registration
+- `GET /trains` - Get all train schedules
+- `GET /trains/:id` - Get a specific train schedule
+- `POST /trains` - Create a new train schedule
+- `PATCH /trains/:id` - Update a train schedule
+- `DELETE /trains/:id` - Delete a train schedule
